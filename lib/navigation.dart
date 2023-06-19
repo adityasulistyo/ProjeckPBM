@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import './home_page.dart';
-import './tips.dart';
-import './jadwal_page.dart';
+import 'package:puasa/home_page.dart';
+import 'package:puasa/tips.dart';
+import 'package:puasa/jadwal_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class NavigationSection extends StatefulWidget {
   @override
@@ -11,6 +12,7 @@ class NavigationSection extends StatefulWidget {
 class _NavigationSectionState extends State<NavigationSection> {
   int _currentPageIndex = 0;
 
+  @override
   void _navigateToPage(int pageIndex) {
     setState(() {
       _currentPageIndex = pageIndex;
@@ -40,10 +42,8 @@ class _NavigationSectionState extends State<NavigationSection> {
               tanggal: 'your_tanggal',
             ),
           ),
-        );
-        // Navigasi ke halaman Jadwal
+        ); // Navigasi ke halaman Jadwal
         break;
-
       case 3:
         // Navigasi ke halaman Akun
         break;

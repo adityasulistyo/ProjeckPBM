@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import './profile.dart';
-import './date_time.dart';
-import './navigation.dart';
-import './news_section.dart';
+import 'package:puasa/profile.dart';
+import 'package:puasa/date_time.dart';
+import 'package:puasa/navigation.dart';
+import 'package:puasa/news_section.dart';
 
 class HomePage extends StatelessWidget {
   @override
