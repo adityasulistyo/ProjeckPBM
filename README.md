@@ -1,4 +1,4 @@
-# jadwalpuasa
+# puasa
 
 A new Flutter project.
 

@@ -46,13 +46,16 @@ class JadwalPage extends StatelessWidget {
                 fontSize: 16.0,
               ),
             ),
+            SizedBox(height: 16.0),
+            Expanded(
+              child: JadwalList(),
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showAddScheduleDialog(
-              context); // Tampilkan dialog untuk menambah jadwal
+          _showAddScheduleDialog(context);
         },
         child: Icon(Icons.add),
       ),
@@ -63,17 +66,15 @@ class JadwalPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) {
-        // Buat variabel untuk menyimpan nilai input
         String newImageUrl = '';
         String newDescription = '';
         String newTanggal = '';
 
         Future<void> _getImage(ImageSource source) async {
           final picker = ImagePicker();
-          final pickedImage = await picker.getImage(source: source);
+          final pickedImage = await picker.pickImage(source: source);
 
           if (pickedImage != null) {
-            // Handle the picked image
             newImageUrl = pickedImage.path;
           }
         }
@@ -88,14 +89,13 @@ class JadwalPage extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      _getImage(ImageSource.camera); // Ambil gambar dari kamera
+                      _getImage(ImageSource.camera);
                     },
                     child: Text('Camera'),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _getImage(
-                          ImageSource.gallery); // Ambil gambar dari galeri
+                      _getImage(ImageSource.gallery);
                     },
                     child: Text('Gallery'),
                   ),
@@ -118,14 +118,13 @@ class JadwalPage extends StatelessWidget {
           actions: [
             ElevatedButton(
               onPressed: () {
-                // Simpan jadwal baru ke Firestore
                 _saveSchedule(
                   newImageUrl,
                   newDescription,
                   newTanggal,
                 );
 
-                Navigator.pop(context); // Tutup dialog
+                Navigator.pop(context);
               },
               child: Text('Save'),
             ),
@@ -135,13 +134,12 @@ class JadwalPage extends StatelessWidget {
     );
   }
 
-  void _saveSchedule(String imageUrl, String description, String tanggal) {
-    // Dapatkan referensi ke koleksi Firestore
+  void _saveSchedule(
+      String imageUrl, String description, String tanggal) async {
     CollectionReference schedulesCollection =
         FirebaseFirestore.instance.collection('schedules');
 
-    // Buat dokumen baru dengan ID yang dihasilkan secara otomatis
-    schedulesCollection.add({
+    await schedulesCollection.add({
       'imageUrl': imageUrl,
       'description': description,
       'tanggal': tanggal,
@@ -190,14 +188,4 @@ class JadwalList extends StatelessWidget {
       },
     );
   }
-}
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(JadwalPage(
-    imageUrl: 'your_image_url',
-    description: 'your_description',
-    tanggal: 'your_tanggal',
-  ));
 }
