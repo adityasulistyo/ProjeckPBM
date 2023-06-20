@@ -61,8 +61,8 @@ class NewsItem {
 
   factory NewsItem.fromJson(Map<String, dynamic> json) {
     return NewsItem(
-      title: json['title'],
-      imageUrl: json['urlToImage'],
+      title: json['title'] ?? '',
+      imageUrl: json['urlToImage'] ?? '',
     );
   }
 }
