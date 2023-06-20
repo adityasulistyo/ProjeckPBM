@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:puasa/konfigurasi_firebase.dart';
 
 class JadwalPage extends StatelessWidget {
   final String imageUrl;
@@ -68,7 +68,7 @@ class JadwalPage extends StatelessWidget {
       builder: (context) {
         String newImageUrl = '';
         String newDescription = '';
-        String newTanggal = '';
+        DateTime? newTanggal;
 
         Future<void> _getImage(ImageSource source) async {
           final picker = ImagePicker();
@@ -110,7 +110,7 @@ class JadwalPage extends StatelessWidget {
               TextField(
                 decoration: InputDecoration(labelText: 'Tanggal'),
                 onChanged: (value) {
-                  newTanggal = value;
+                  newTanggal = DateTime.parse(value);
                 },
               ),
             ],
@@ -119,9 +119,10 @@ class JadwalPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 _saveSchedule(
+                  context,
                   newImageUrl,
                   newDescription,
-                  newTanggal,
+                  newTanggal!,
                 );
 
                 Navigator.pop(context);
@@ -134,27 +135,39 @@ class JadwalPage extends StatelessWidget {
     );
   }
 
-  void _saveSchedule(
-      String imageUrl, String description, String tanggal) async {
-    CollectionReference schedulesCollection =
-        FirebaseFirestore.instance.collection('schedules');
+  void _saveSchedule(BuildContext context, String imageUrl, String description,
+      DateTime tanggal) async {
+    try {
+      CollectionReference schedules =
+          FirebaseConfig.firestoreInstance.collection('schedules');
+      String userId = FirebaseConfig.authInstance.currentUser!.uid;
 
-    await schedulesCollection.add({
-      'imageUrl': imageUrl,
-      'description': description,
-      'tanggal': tanggal,
-    });
+      await schedules.add({
+        'userId': userId,
+        'imageUrl': imageUrl,
+        'description': description,
+        'tanggal': tanggal,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Schedule saved successfully.'),
+      ));
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to save schedule.'),
+      ));
+    }
   }
 }
 
 class JadwalList extends StatelessWidget {
-  final CollectionReference schedulesCollection =
-      FirebaseFirestore.instance.collection('schedules');
+  final CollectionReference schedules =
+      FirebaseConfig.firestoreInstance.collection('schedules');
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: schedulesCollection.snapshots(),
+      stream: schedules.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
@@ -186,6 +199,28 @@ class JadwalList extends StatelessWidget {
           }).toList(),
         );
       },
+    );
+  }
+}
+
+void main() async {
+  await FirebaseConfig.initializeApp();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Jadwal App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: JadwalPage(
+        imageUrl: 'https://example.com/image.jpg',
+        description: 'Sample Description',
+        tanggal: '2023-06-17',
+      ),
     );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:puasa/home_page.dart';
+// import 'package:puasa/jadwal_page.dart';
 import 'package:puasa/tips.dart';
-import 'package:puasa/jadwal_page.dart';
+import 'package:puasa/jadwal.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:puasa/jadwal.dart';
 
 class NavigationSection extends StatefulWidget {
   @override
@@ -36,11 +38,7 @@ class _NavigationSectionState extends State<NavigationSection> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => JadwalPage(
-              imageUrl: 'your_image_url',
-              description: 'your_description',
-              tanggal: 'your_tanggal',
-            ),
+            builder: (context) => MyApp(),
           ),
         ); // Navigasi ke halaman Jadwal
         break;

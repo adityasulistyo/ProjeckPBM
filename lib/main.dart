@@ -5,8 +5,13 @@ import 'home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:puasa/firebase_options.dart';
 
-void main() => runApp(BukaPuasaApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(BukaPuasaApp());
+}
 
 class BukaPuasaApp extends StatelessWidget {
   @override
