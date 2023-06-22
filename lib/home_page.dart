@@ -28,6 +28,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+      // bottomNavigationBar: NavigationSection(),
     );
   }
 }
