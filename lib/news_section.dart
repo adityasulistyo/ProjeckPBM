@@ -17,16 +17,15 @@ class _NewsSectionState extends State<NewsSection> {
   }
 
   Future<void> fetchNews() async {
-    String apiKey = 'a5963a5fd95648f290114b1dfdd512ea';
-    String url =
-        'https://newsapi.org/v2/everything?q=health%20during%20fasting&apiKey=$apiKey';
+    String url = 'https://api-berita-indonesia.vercel.app/suara/health/';
 
     var response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
+      var data = jsonData['data'];
       setState(() {
-        newsList = jsonData['articles'];
+        newsList = data['posts'];
       });
     } else {
       print('Failed to fetch news');
@@ -43,7 +42,7 @@ class _NewsSectionState extends State<NewsSection> {
           itemBuilder: (BuildContext context, int index) {
             var news = newsList[index];
             return ListTile(
-              leading: Image.network(news['urlToImage']),
+              leading: Image.network(news['thumbnail']),
               title: Text(
                 news['title'],
                 style: TextStyle(fontFamily: 'Exo2'),
