@@ -1,33 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import 'home_page.dart';
+import 'package:provider/provider.dart';
+import './providers/auth.dart';
+import './auth.page.dart';
+import './home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:puasa/firebase_options.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(BukaPuasaApp());
 }
 
 class BukaPuasaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Aplikasi Buka Puasa',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        textTheme: TextTheme(
-          bodyText2: TextStyle(
-            color: Color.fromARGB(255, 8, 61, 10),
-          ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => Auth(),
         ),
-        scaffoldBackgroundColor: Color.fromARGB(255, 212, 243, 228),
+      ],
+      builder: (context, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Colors.green, // Warna hijau untuk primary color
+          hintColor: Colors.greenAccent, // Warna hijau untuk accent color
+          // Atur warna lainnya sesuai kebutuhan
+        ),
+        home: LoginPage(),
+        routes: {
+          HomePage.route: (ctx) => HomePage(),
+        },
       ),
-      home: HomePage(),
     );
   }
 }

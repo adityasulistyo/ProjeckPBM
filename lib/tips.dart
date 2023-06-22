@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'read_news.dart';
 
 class NewsSection extends StatefulWidget {
   @override
@@ -17,23 +18,36 @@ class _NewsSectionState extends State<NewsSection> {
   }
 
   Future<void> fetchNews() async {
-    String apiKey = 'a5963a5fd95648f290114b1dfdd512ea';
-    String url =
-        'https://newsapi.org/v2/everything?q=health%20tips%20for%20fasting&apiKey=$apiKey';
+    String url = 'https://api-berita-indonesia.vercel.app/suara/health/';
 
     var response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
+      var posts = data['data']['posts'];
 
       setState(() {
-        newsList = (data['articles'] as List)
+        newsList = (posts as List)
             .map((item) => NewsItem.fromJson(item))
             .toList();
       });
     } else {
       print('Failed to fetch news');
     }
+  }
+
+  void openNewsArticle(BuildContext context, NewsItem newsItem) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReadNewsPage(
+          title: newsItem.title,
+          description: newsItem.description,
+          imageUrl: newsItem.thumbnail,
+          content: '', // You can fetch the content of the news article here
+        ),
+      ),
+    );
   }
 
   @override
@@ -43,7 +57,12 @@ class _NewsSectionState extends State<NewsSection> {
       child: ListView.builder(
         itemCount: newsList.length,
         itemBuilder: (context, index) {
-          return NewsItemCard(newsItem: newsList[index]);
+          return NewsItemCard(
+            newsItem: newsList[index],
+            onPressed: () {
+              openNewsArticle(context, newsList[index]);
+            },
+          );
         },
       ),
     );
@@ -52,25 +71,35 @@ class _NewsSectionState extends State<NewsSection> {
 
 class NewsItem {
   final String title;
-  final String imageUrl;
+  final String description;
+  final String thumbnail;
+  final String link;
 
   NewsItem({
     required this.title,
-    required this.imageUrl,
+    required this.description,
+    required this.thumbnail,
+    required this.link,
   });
 
   factory NewsItem.fromJson(Map<String, dynamic> json) {
     return NewsItem(
       title: json['title'] ?? '',
-      imageUrl: json['urlToImage'] ?? '',
+      description: json['description'] ?? '',
+      thumbnail: json['thumbnail'] ?? '',
+      link: json['link'] ?? '',
     );
   }
 }
 
 class NewsItemCard extends StatelessWidget {
   final NewsItem newsItem;
+  final VoidCallback onPressed;
 
-  NewsItemCard({required this.newsItem});
+  NewsItemCard({
+    required this.newsItem,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +110,7 @@ class NewsItemCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(
-              newsItem.imageUrl,
+              newsItem.thumbnail,
               height: 200,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -93,6 +122,18 @@ class NewsItemCard extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              newsItem.description,
+              style: TextStyle(
+                fontSize: 14,
+              ),
+            ),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: onPressed, // Invoke the callback function
+              child: Text('Read More'),
             ),
           ],
         ),
